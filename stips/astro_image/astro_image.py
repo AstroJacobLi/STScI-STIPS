@@ -634,6 +634,7 @@ class AstroImage(object):
         return psf_array, psf_middle
 
     def addPSFs(self, xs, ys, fluxes, mags, *args, **kwargs):
+        from tqdm import tqdm
         """Adds a set of point sources to the image given their co-ordinates and count rates."""
         self.addHistory("Adding {} point sources".format(len(xs)))
         self._log("info", "Adding {} point sources to AstroImage {}".format(len(xs), self.name))
@@ -656,7 +657,7 @@ class AstroImage(object):
             xbright_psf_array, xbright_psf_middle = self.make_epsf_array('xbright')
             xbright_boxsize = np.floor(xbright_psf_middle)/PSF_UPSCALE
 
-        for k, (xpix, ypix, flux, mag) in enumerate(zip(xs, ys, fluxes, mags)):
+        for k, (xpix, ypix, flux, mag) in enumerate(tqdm(zip(xs, ys, fluxes, mags))):
             self.addHistory("Adding point source {} at {},{}".format(k+1, xpix, ypix))
             self._log("info", "Adding point source {} to AstroImage {},{}".format(k+1, xpix, ypix))
 
@@ -777,8 +778,8 @@ class AstroImage(object):
         source_dict['spectrum'] = {'redshift': 0., 'sed': {'sed_type': 'flat'}}
         source_dict['normalization'] = {'type': 'none'}
         source_dict['position'] = {'orientation': 90-phi}
-        source_dict['position']['x_offset'] = self.xsize - posX
-        source_dict['position']['y_offset'] = self.ysize - posY
+        source_dict['position']['x_offset'] = 0 #self.xsize - posX
+        source_dict['position']['y_offset'] = 0 # self.ysize - posY
         g = coords.Grid(1., 1., self.xsize, self.ysize)
         xc, yc = ix, iy
 
@@ -786,8 +787,11 @@ class AstroImage(object):
         src.grid = g
         sersic = profile.SersicDistribution(src)
         img = deepcopy(sersic.prof)*flux/np.sum(sersic.prof)
+        # img = deepcopy(sersic.norm_prof) * flux
         central_flux = img[yc, xc]
 
+        self.addHistory("Adding Sersic source at {},{} with central flux {}".format(xc, yc, central_flux))
+        self._log("info", "Adding Sersic source at {},{} with central flux {}".format(xc, yc, central_flux))
         # Read input PSF files
         psf_array, psf_middle = self.make_epsf_array()
         boxsize = rind(np.floor(psf_middle)/PSF_UPSCALE)
@@ -991,7 +995,7 @@ class AstroImage(object):
             Take absolute value of `noiseData`.
         """
         abs_data = np.absolute(self.data)
-        noise_data = np.random.RandomState(seed=self.seed).normal(size=self.shape) * np.sqrt(abs_data)
+        noise_data = np.random.RandomState(seed=self.seed).normal(size=self.shape) * np.sqrt(abs_data) / np.sqrt(self.exptime)
         if absVal:
             noise_data = np.abs(noise_data)
         mean, std = noise_data.mean(), noise_data.std()
@@ -1008,7 +1012,7 @@ class AstroImage(object):
         readnoise: constant representing average read noise per pixel.
         """
         noise_data = np.zeros(tuple(self.shape), dtype='float32')
-        noise_data[:, :] = readnoise * np.random.RandomState(seed=self.seed).randn(self.ysize, self.xsize)
+        noise_data[:, :] = readnoise * np.random.RandomState(seed=self.seed).randn(self.ysize, self.xsize) / self.exptime
         mean, std = noise_data.mean(), noise_data.std()
         self.data += noise_data
         self.updateHeader("RDNOISE", readnoise)

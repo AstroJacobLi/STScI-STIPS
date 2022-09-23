@@ -789,12 +789,12 @@ class Instrument(object):
             units = table['units'].filled()
         else:
             units = table['units']
-        idxp = np.where(units == 'p')
-        rates[idxp] *= self.convertToCounts('p')
-        idxe = np.where(units == 'e')
-        rates[idxe] *= self.convertToCounts('e')
-        idxj = np.where(units == 'j')
-        rates[idxj] *= self.convertToCounts('j')
+        # idxp = np.where(units == 'p')
+        # rates[idxp] *= self.convertToCounts('p')
+        # idxe = np.where(units == 'e')
+        # rates[idxe] *= self.convertToCounts('e')
+        # idxj = np.where(units == 'j')
+        # rates[idxj] *= self.convertToCounts('j')
         t = Table()
         t['ra'] = Column(data=ras.data)
         t['dec'] = Column(data=decs.data)
