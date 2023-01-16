@@ -55,12 +55,12 @@ class WFI(RomanInstrument):
     OFFSET_NAMES = ("SCA01", "SCA02", "SCA03", "SCA04", "SCA05", "SCA06",
                     "SCA07", "SCA08", "SCA09", "SCA10", "SCA11", "SCA12",
                     "SCA13", "SCA14", "SCA15", "SCA16", "SCA17", "SCA18")
-    N_OFFSET = {1:      (0.0,    0.0,  0.0),  2:     (0.0,  464.31, 0.0),  3:     (0.0,   995.32, 0.0),
-                4:   (-533.06, 131.74, 0.0),  5:  (-533.06, 596.05, 0.0),  6:  (-533.06, 1127.06, 0.0),
-                7:  (-1066.12, 338.76, 0.0),  8: (-1066.12, 803.07, 0.0),  9: (-1066.12, 1334.08, 0.0),
-                10:   (533.06,   0.0,  0.0), 11:   (533.06, 464.31, 0.0), 12:   (533.06,  995.32, 0.0),
-                13:  (1066.12, 131.74, 0.0), 14:  (1066.12, 596.05, 0.0), 15:  (1066.12, 1127.06, 0.0),
-                16:  (1599.18, 338.76, 0.0), 17:  (1599.18, 803.07, 0.0), 18:  (1599.18, 1334.08, 0.0)}
+    N_OFFSET = {1: (0.0, 0.0, 0.0), 2: (0.0, 464.31, 0.0), 3: (0.0, 995.32, 0.0),
+                4: (-533.06, 131.74, 0.0), 5: (-533.06, 596.05, 0.0), 6: (-533.06, 1127.06, 0.0),
+                7: (-1066.12, 338.76, 0.0), 8: (-1066.12, 803.07, 0.0), 9: (-1066.12, 1334.08, 0.0),
+                10: (533.06, 0.0, 0.0), 11: (533.06, 464.31, 0.0), 12: (533.06, 995.32, 0.0),
+                13: (1066.12, 131.74, 0.0), 14: (1066.12, 596.05, 0.0), 15: (1066.12, 1127.06, 0.0),
+                16: (1599.18, 338.76, 0.0), 17: (1599.18, 803.07, 0.0), 18: (1599.18, 1334.08, 0.0)}
 
     # Each detector is 450.56 x 450.56", and according to the WFIRST-STSCI-TR1506A
     # Document, the offsets are (27.5”) in the long direction and (94.2" and 27.5")
@@ -83,17 +83,20 @@ class WFI(RomanInstrument):
     '''
 
     DETECTOR_OFFSETS = (  # SCA01                  SCA02                    SCA03
-                        (0.0, 0.0, 0.0),         (0.0, 464.31, 0.0),      (0.0, 995.32, 0.0),
-                        # SCA04                  SCA05                    SCA06
-                        (-533.06, 131.74, 0.0),  (-533.06, 596.05, 0.0),  (-533.06, 1127.06, 0.0),
-                        # SCA07                  SCA08                    SCA09
-                        (-1066.12, 338.76, 0.0), (-1066.12, 803.07, 0.0), (-1066.12, 1334.08, 0.0),
-                        # SCA10                  SCA11                    SCA12
-                        (533.06, 0.0, 0.0),      (533.06, 464.31, 0.0),   (533.06, 995.32, 0.0),
-                        # SCA13                  SCA14                    SCA15
-                        (1066.12, 131.74, 0.0),  (1066.12, 596.05, 0.0),  (1066.12, 1127.06, 0.0),
-                        # SCA16                  SCA17                    SCA18
-                        (1599.18, 338.76, 0.0),  (1599.18, 803.07, 0.0),  (1599.18, 1334.08, 0.0))
+        (0.0, 0.0, 0.0), (0.0, 464.31, 0.0), (0.0, 995.32, 0.0),
+        # SCA04                  SCA05                    SCA06
+        (-533.06, 131.74, 0.0), (-533.06, 596.05, 0.0), (-533.06, 1127.06, 0.0),
+        # SCA07                  SCA08                    SCA09
+        (-1066.12, 338.76, 0.0), (-1066.12,
+                                  803.07, 0.0), (-1066.12, 1334.08, 0.0),
+        # SCA10                  SCA11                    SCA12
+        (533.06, 0.0, 0.0), (533.06, 464.31,
+                             0.0), (533.06, 995.32, 0.0),
+        # SCA13                  SCA14                    SCA15
+        (1066.12, 131.74, 0.0), (1066.12,
+                                 596.05, 0.0), (1066.12, 1127.06, 0.0),
+        # SCA16                  SCA17                    SCA18
+        (1599.18, 338.76, 0.0), (1599.18, 803.07, 0.0), (1599.18, 1334.08, 0.0))
 
     # This is a set of offsets derived from "WFIRST-STSCI-TR1506A"
     #
@@ -141,17 +144,17 @@ class WFI(RomanInstrument):
     # I'm using the detector centre at 1.55um.
     DETECTOR_FPA = (  # SCA01                SCA02               SCA03
                       (-22.029, -11.956), (-22.181, 36.421), (-22.331, 80.749),
-                    # SCA04                SCA05               SCA06
+        # SCA04                SCA05               SCA06
                       (-65.558, -20.505), (-66.055, 27.856), (-66.543, 71.928),
-                    # SCA07                SCA08               SCA09
-                      (-109.05,  -41.316), (-109.83,   7.001), (-110.97,  50.358),
-                    # SCA10                SCA11               SCA12
-                      (21.509, -11.955), (21.65,  36.42),  (21.787, 80.747),
-                    # SCA13                SCA14               SCA15
-                      (65.03,  -20.503), (65.517, 27.854), (65.993, 71.923),
-                    # SCA16                SCA17               SCA18
-                      (108.507, -41.309), (109.282,  7.002), (110.409, 50.353),
-                   )
+        # SCA07                SCA08               SCA09
+                      (-109.05, -41.316), (-109.83, 7.001), (-110.97, 50.358),
+        # SCA10                SCA11               SCA12
+                      (21.509, -11.955), (21.65, 36.42), (21.787, 80.747),
+        # SCA13                SCA14               SCA15
+                      (65.03, -20.503), (65.517, 27.854), (65.993, 71.923),
+        # SCA16                SCA17               SCA18
+                      (108.507, -41.309), (109.282, 7.002), (110.409, 50.353),
+    )
 
     # From WFIRST-STScI-TR1506A(3).pdf, 2.5mm=27.5", and 8.564mm=94.2"
     DETECTOR_MM_ARCSEC = 11.
@@ -163,7 +166,8 @@ class WFI(RomanInstrument):
 
     # N_DETECTORS is a set of options on how many of the instrument's detectors you want to use
     N_DETECTORS = [1]
-    INSTRUMENT_OFFSET = (0., 0., 0.)  # Presumably there is one, but not determined
+    # Presumably there is one, but not determined
+    INSTRUMENT_OFFSET = (0., 0., 0.)
     DETECTOR_SIZE = (4088, 4088)  # pixels
     PIXEL_SIZE = 10.0  # um (Assume for now)
     SCALE = [0.11, 0.11]  # Assume for now
@@ -178,43 +182,46 @@ class WFI(RomanInstrument):
 
     # Background Values
     BACKGROUND = {'none': {'F062': 0., 'F087': 0., 'F106': 0., 'F129': 0., 'F158': 0., 'F184': 0., 'F146': 0.},
-                  'avg':  {'F062': 1.401E+00, 'F087': 1.401E+00, 'F106': 1.401E+00, 'F129': 7.000E-01,
-                           'F158': 7.521E-01, 'F184': 8.500E-01, 'F146': 7.000E-01}}
+                  'avg': {'F062': 1.401E+00, 'F087': 1.401E+00, 'F106': 1.401E+00, 'F129': 7.000E-01,
+                          'F158': 7.521E-01, 'F184': 8.500E-01, 'F146': 7.000E-01}}
     BACKGROUNDS_V = ['none', 'avg', 'med', 'max', 'min']
-    BACKGROUNDS = ['None', 'Average zodiacal background', 'Median zodiacal background', 'Maximum zodiacal background', 'Minimum zodiacal background']
+    BACKGROUNDS = ['None', 'Average zodiacal background', 'Median zodiacal background',
+                   'Maximum zodiacal background', 'Minimum zodiacal background']
     BGTEXT = {'none': 'None', 'avg': 'Average zodiacal background',
               'med': 'Median zodiacal background', 'max': 'Maximum zodiacal background',
               'min': 'Minimum zodiacal background', 'custom': 'Custom thermal background rate'}
     # PHOTFNU has units of Jy
     # For now, just assuming similar PHOTFNU to WFC3IR.
-    PHOTFNU = {'F062': 3.25e-08, 'F087': 8.87e-08, 'F106': 3.94e-08, 'F129': 3.51e-08, 'F158': 3.13e-08, 'F184': 1.18e-07, 'F146': 1.63e-08}
+    PHOTFNU = {'F062': 3.25e-08, 'F087': 8.87e-08, 'F106': 3.94e-08,
+               'F129': 3.51e-08, 'F158': 3.13e-08, 'F184': 1.18e-07, 'F146': 1.63e-08}
     # PHOTPLAM has units of um
     # For now, just put them in the middle
-    PHOTPLAM = {'F062': 0.6700, 'F087': 0.8735, 'F106': 1.0595, 'F129': 1.2925, 'F158': 1.577, 'F184': 1.5815, 'F146': 1.4635}
+    PHOTPLAM = {'F062': 0.6700, 'F087': 0.8735, 'F106': 1.0595,
+                'F129': 1.2925, 'F158': 1.577, 'F184': 1.5815, 'F146': 1.4635}
     # For now, just put in HST-style dithers.
     DITHERS = ("SUBPIXEL ONLY", "BOX-UVIS", "BLOB")  # Assume for now
     DITHER_POINTS = {
-                        "SUBPIXEL ONLY": ["0"],
-                        "BOX-UVIS": ["4"],
-                        "BLOB": ["1", "2"]
-                     }
+        "SUBPIXEL ONLY": ["0"],
+        "BOX-UVIS": ["4"],
+        "BLOB": ["1", "2"]
+    }
     DITHER_SIZE = {
-                    "SUBPIXEL ONLY": ["STABDARD"],
-                    "BOX-UVIS": ["Standard"],
-                    "BLOB": ["Standard"]
-                  }
+        "SUBPIXEL ONLY": ["STABDARD"],
+        "BOX-UVIS": ["Standard"],
+        "BLOB": ["Standard"]
+    }
     DITHER_SUBPIXEL = {
-                        "SUBPIXEL ONLY": ["LINE", "LINE-3PT", "BOX-MIN"],
-                        "BOX-UVIS": ["NONE", "LINE", "LINE-3PT", "BOX-MIN"],
-                        "BLOB": ["NONE", "LINE", "LINE-3PT", "BOX-MIN"]
-                      }
+        "SUBPIXEL ONLY": ["LINE", "LINE-3PT", "BOX-MIN"],
+        "BOX-UVIS": ["NONE", "LINE", "LINE-3PT", "BOX-MIN"],
+        "BLOB": ["NONE", "LINE", "LINE-3PT", "BOX-MIN"]
+    }
     DITHER_OFFSETS = {
-                        "BOX-UVIS": [(-11.071, -17.744), (11.947, -17.457), (11.071, 17.744), (-11.947, 17.457)],
-                        "BLOB": [(-1.930, -1.729), (1.930, 1.729)],
-                        "SUBPIXEL": {
-                                        "NONE":     [(0.000, 0.000)],
-                                        "BOX-MIN":  [(0.000, 0.000), (0.542, 0.182), (0.339, 0.485), (-0.203, 0.303)],
-                                        "LINE":     [(0.000, 0.000), (0.474, 0.424)],
-                                        "LINE-3PT": [(0.000, 0.000), (0.451, 0.403), (0.902, 0.806)]
-                                    }
-                     }
+        "BOX-UVIS": [(-11.071, -17.744), (11.947, -17.457), (11.071, 17.744), (-11.947, 17.457)],
+        "BLOB": [(-1.930, -1.729), (1.930, 1.729)],
+        "SUBPIXEL": {
+            "NONE": [(0.000, 0.000)],
+            "BOX-MIN": [(0.000, 0.000), (0.542, 0.182), (0.339, 0.485), (-0.203, 0.303)],
+            "LINE": [(0.000, 0.000), (0.474, 0.424)],
+            "LINE-3PT": [(0.000, 0.000), (0.451, 0.403), (0.902, 0.806)]
+        }
+    }

@@ -274,7 +274,7 @@ def real_psf(dx, dy, epsf, psf_center=177, boxsize=PSF_BOXSIZE):
     return rpsf_phot
 
 
-def place_source(xpix, ypix, flux, image, epsf, boxsize=PSF_BOXSIZE, psf_center=177):
+def place_source(xpix, ypix, flux, image, epsf, boxsize=PSF_BOXSIZE, psf_center=177, quick=False):
     """
     Place a source into image.
 
@@ -309,13 +309,19 @@ def place_source(xpix, ypix, flux, image, epsf, boxsize=PSF_BOXSIZE, psf_center=
         min_x = max(0, round(xpix-boxsize))
         # Apply real_psf for every pixel in the box, dx/dy are the pixel
         # positions within the box.
-        for j in range(min_y, max_y):
-            dy = j-ypix
-            for i in range(min_x, max_x):
-                dx = i-xpix
-                ff = real_psf(dx, dy, epsf, psf_center=psf_center, boxsize=boxsize)
-                ffa = (flux*ff)
-                image[j, i] += ffa
+        if not quick:
+            for j in range(min_y, max_y):
+                dy = j-ypix
+                for i in range(min_x, max_x):
+                    dx = i-xpix
+                    ff = real_psf(dx, dy, epsf, psf_center=psf_center, boxsize=boxsize)
+                    ffa = (flux*ff)
+                    image[j, i] += ffa
+                    
+        if quick:
+            assert epsf.shape[0] == PSF_BOXSIZE, 'If you want it quick, bin the ePSF to 22x22'
+            image[min_y:max_y, min_x:max_x] += flux * epsf[round(min_y - ypix + boxsize):round(max_y - ypix + boxsize), 
+                                                           round(min_x - xpix + boxsize):round(max_x - xpix + boxsize)]
 
     return image
 

@@ -76,6 +76,7 @@ class Instrument(object):
         self.background_value = SelectParameter('background', kwargs)
         self.custom_background = kwargs.get('custom_background', 0.)
         self.CENTRAL_OFFSET = (0., 0., 0.)
+        self.quick = kwargs.get('quick', False)
 
         # Adjust # of detectors based on keyword:
         n_detectors = int(kwargs.get('detectors', len(self.DETECTOR_OFFSETS)))
@@ -178,7 +179,7 @@ class Instrument(object):
             self._log("info", msg.format(name, delta_ra, delta_dec))
             detector = AstroImage(parent=self, ra=ra, dec=dec, pa=pa, psf=psf,
                                   header=hdr, history=hist, detname=name,
-                                  distortion=distortion)
+                                  distortion=distortion, quick=self.quick)
             self._log("info", "Detector {} created".format(name))
             self.detectors.append(detector)
 

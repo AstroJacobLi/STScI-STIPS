@@ -113,6 +113,7 @@ class AstroImage(object):
 
         self.name = kwargs.get('detname', default['detector'][self.instrument])
         self.detector = self.name
+        self.quick = kwargs.get('quick', False)
 
         data = kwargs.get('data', None)
         if data is not None:
@@ -440,6 +441,13 @@ class AstroImage(object):
             stmags = -2.5 * np.log10(fluxes * self.photflam) - 21.10
             stars_idx = np.where(types == 'point')
             if len(xs[stars_idx]) > 0:
+                self._log("info", "Generate PSF models")
+                self.psf_array, self.psf_middle = self.make_epsf_array()
+                if np.any(stmags[stars_idx] < self.bright_limit):
+                    self.bright_psf_array, self.bright_psf_middle = self.make_epsf_array('bright')
+                if np.any(stmags[stars_idx] < self.xbright_limit):
+                    self.xbright_psf_array, self.xbright_psf_middle = self.make_epsf_array('xbright')
+                
                 self._log("info", "Writing {} stars".format(len(xs[stars_idx])))
                 self.addPSFs(xs[stars_idx], ys[stars_idx], fluxes[stars_idx], stmags[stars_idx], *args, **kwargs)
                 fluxes_observed[stars_idx] = fluxes[stars_idx]
@@ -643,21 +651,21 @@ class AstroImage(object):
         image_size = self.data.shape[0]
 
         # Read input PSF files
-        psf_array, psf_middle = self.make_epsf_array()
-        boxsize = np.floor(psf_middle)/PSF_UPSCALE
+        # psf_array, psf_middle = self.make_epsf_array()
+        # boxsize = np.floor(psf_middle)/PSF_UPSCALE
 
-        # Are there bright stars?
-        are_bright = np.any(mags < self.bright_limit)
-        are_xbright = np.any(mags < self.xbright_limit)
-        # If so, generate extra ePSF arrays
-        if are_bright:
-            bright_psf_array, bright_psf_middle = self.make_epsf_array('bright')
-            bright_boxsize = np.floor(bright_psf_middle)/PSF_UPSCALE
-        if are_xbright:
-            xbright_psf_array, xbright_psf_middle = self.make_epsf_array('xbright')
-            xbright_boxsize = np.floor(xbright_psf_middle)/PSF_UPSCALE
+        # # Are there bright stars?
+        # are_bright = np.any(mags < self.bright_limit)
+        # are_xbright = np.any(mags < self.xbright_limit)
+        # # If so, generate extra ePSF arrays
+        # if are_bright:
+        #     bright_psf_array, bright_psf_middle = self.make_epsf_array('bright')
+        #     bright_boxsize = np.floor(bright_psf_middle)/PSF_UPSCALE
+        # if are_xbright:
+        #     xbright_psf_array, xbright_psf_middle = self.make_epsf_array('xbright')
+        #     xbright_boxsize = np.floor(xbright_psf_middle)/PSF_UPSCALE
 
-        for k, (xpix, ypix, flux, mag) in enumerate(tqdm(zip(xs, ys, fluxes, mags))):
+        for k, (xpix, ypix, flux, mag) in enumerate(tqdm(zip(xs, ys, fluxes, mags), desc='Injecting point sources')):
             self.addHistory("Adding point source {} at {},{}".format(k+1, xpix, ypix))
             self._log("info", "Adding point source {} to AstroImage {},{}".format(k+1, xpix, ypix))
 
@@ -667,19 +675,26 @@ class AstroImage(object):
                 continue  # break the loop
 
             # Create interpolated ePSF from input PSF files
+            from scipy.ndimage import zoom
             if mag > self.bright_limit:
-                epsf = interpolate_epsf(xpix, ypix, psf_array, image_size)
-                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=boxsize, psf_center=psf_middle)
+                epsf = interpolate_epsf(xpix, ypix, self.psf_array, image_size)
+                if self.quick:
+                    epsf = zoom(epsf, 0.25)
+                    epsf /= np.sum(epsf)
+                boxsize = np.floor(self.psf_middle)/PSF_UPSCALE
+                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=boxsize, psf_center=self.psf_middle, quick=self.quick)
             elif (self.xbright_limit < mag < self.bright_limit):
                 self.addHistory("Placing Bright Source with mag = {}".format(mag))
                 self._log("info", "Placing Bright Source with mag = {}".format(mag))
-                epsf = interpolate_epsf(xpix, ypix, bright_psf_array, image_size)
-                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=bright_boxsize, psf_center=bright_psf_middle)
+                epsf = interpolate_epsf(xpix, ypix, self.bright_psf_array, image_size)
+                boxsize = np.floor(self.bright_psf_middle)/PSF_UPSCALE
+                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=boxsize, psf_center=self.bright_psf_middle, quick=False)
             elif mag < self.xbright_limit:
                 self.addHistory("Placing Extra Bright Source with mag = {}".format(mag))
                 self._log("info", "Placing Extra Bright Source with mag = {}".format(mag))
-                epsf = interpolate_epsf(xpix, ypix, xbright_psf_array, image_size)
-                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=xbright_boxsize, psf_center=xbright_psf_middle)
+                epsf = interpolate_epsf(xpix, ypix, self.xbright_psf_array, image_size)
+                boxsize = np.floor(self.xbright_psf_middle)/PSF_UPSCALE
+                self.data = place_source(xpix, ypix, flux, self.data, epsf, boxsize=boxsize, psf_center=self.xbright_psf_middle, quick=False)
 
     def cropToBaseSize(self):
         """
