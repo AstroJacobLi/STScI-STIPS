@@ -64,6 +64,7 @@ class ObservationModule(object):
         self.exptime = float(obs.get('exptime', 1.))
         self.bright_limit = obs.get('bright_limit', 14.)
         self.xbright_limit = obs.get('xbright_limit', 3.)
+        self.quick = obs.get('quick', False)
         if len(self.filters) == 0 and 'filter' in obs:
             self.filters.append(obs['filter'])
 

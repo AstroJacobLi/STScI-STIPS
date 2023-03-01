@@ -927,6 +927,7 @@ class Instrument(object):
         dark = SelectParameter('residual_dark', kwargs)
         cosmic = SelectParameter('residual_cosmic', kwargs)
         snapshots = kwargs.get("snapshots", {})
+        n_exp = kwargs.get("n_exp", 1)
 
         if flat:
             flat = AstroImage.initDataFromFits(self.flatfile, ext='COMPRESSED_IMAGE', psf=False, logger=self.logger)
@@ -934,7 +935,7 @@ class Instrument(object):
             dark = AstroImage.initDataFromFits(self.darkfile, ext='COMPRESSED_IMAGE', psf=False, logger=self.logger)
             dark *= self.exptime
         if readnoise:
-            rn = self.generateReadnoise()
+            rn = self.generateReadnoise(n_exp)
         for detector in self.detectors:
             if 'initial' in snapshots:
                 detector.toFits(self.imgbase+"_{}_{}_snapshot_initial.fits".format(self.obs_count, detector.name))
